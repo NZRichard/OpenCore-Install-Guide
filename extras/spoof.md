@@ -1,6 +1,6 @@
 # Disabling GPU
 
-So you need to hide your unsupported GPU? Well with OpenCore things are slightly different, specifically that we need to specify to which exact device we want to spoof. There are 3 ways we can do this:
+So you need to hide your unsupported GPU? With OpenCore we need to specify which device we want to spoof. There are 3 ways we can do this:
 
 * Boot Flag
   * Disables all GPUs except the iGPU
@@ -9,25 +9,25 @@ So you need to hide your unsupported GPU? Well with OpenCore things are slightly
 * SSDT
   * Disables GPU on a per-slot basis
 
-**CSM must be off in the BIOS for the spoofing to work correctly, especially on AMD CPU based systems.**
+**Turn CSM off in the BIOS to enable spoofing to work correctly, especially on AMD CPU based systems.**
 
 ### Boot Flag
 
-By far the simplest way, all you need to do is add the following boot-arg:
+By far the simplest way is to add the following boot-arg:
 
 `-wegnoegpu`
 
-Do note that this will disable all GPUs excluding the iGPU.
+Be aware that this will disable all GPUs except the iGPU.
 
 ### DeviceProperties Method
 
-Here is quite simple, find the PCI route with [gfxutil](https://github.com/acidanthera/gfxutil/releases) and then create a new DeviceProperties section with your spoof:
+Simply find the PCI route with [gfxutil](https://github.com/acidanthera/gfxutil/releases) and then create a new DeviceProperties section with your spoof:
 
 ```
 path/to/gfxutil -f GFX0
 ```
 
-And the output will result in something similar:
+And the output will result in something like:
 
 ```
 DevicePath = PciRoot(0x0)/Pci(0x1,0x0)/Pci(0x0,0x0)/Pci(0x0,0x0)/Pci(0x0,0x0)
@@ -98,7 +98,7 @@ Many users only have two GPUs. Nvidia and the Intel HD/UHD IGPU. Since Nvidia no
 
 ![Credit to CorpNewt for image](../images/extras/spoof-md/corp-windows.png)
 
-The rendered game or application will have its buffer copied to the IGPU. Which is then displayed to you. This does come with a few downsides:
+The rendered game or application will have its buffer copied to the IGPU, which is then rendered in your display. This does come with a few downsides:
 
 * GSync will no longer work.
 * Nvidia settings can no longer be opened. This requires the display to be connected to the GPU
@@ -106,8 +106,8 @@ The rendered game or application will have its buffer copied to the IGPU. Which 
 * Increased input latency.
 * Refresh rate cap.
 
-If your motherboard only has an HDMI connector for the IGPU, the maximum refresh rate for spec 2.1 is [120Hz](https://www.hdmi.org/spec21Sub/EightK60_FourK120). This assumes your board and monitor are of the same spec. This means your 144Hz monitor is only seeing a maximum of 120Hz as determined by the hardware. This limitation *does not* apply if your board has a DP connector for the IGPU.
+If your motherboard only has an HDMI connector for the IGPU, the maximum refresh rate for spec 2.1 is [120Hz](https://www.hdmi.org/spec21Sub/EightK60_FourK120). This assumes your board and monitor are of the same spec. This means your 144Hz monitor refreshes at a maximum of up to 120Hz depending the hardware. This limitation *does not* apply if your board has a DP connector for the IGPU.
 
-If you have more than two GPUs (AMD, Nvidia and Intel), this setting is limited. A monitor connected to the AMD GPU means Windows will only allow you to select the AMD GPU or the Intel IGPU. The Nvidia GPU will not show. In a future version of Windows, this [limitation is removed](https://pureinfotech.com/windows-10-21h1-new-features/#:~:text=Graphics%20settings).
+If you have more than two GPUs (AMD, Nvidia and Intel), this setting is limited. A monitor connected to the AMD GPU in Windows can only be set to AMD GPU or the Intel IGPU. The Nvidia GPU cannot be selected. In a future version of Windows, this [limitation is removed](https://pureinfotech.com/windows-10-21h1-new-features/#:~:text=Graphics%20settings).
 
 As a recommendation, if you use both operating systems equally and prefer no downsides, your best option is an HDMI or DP switch.
