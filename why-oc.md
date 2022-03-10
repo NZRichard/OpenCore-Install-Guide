@@ -1,16 +1,16 @@
 # Why OpenCore over Clover and others
 
-This section contains a brief rundown as to why the community has been transitioning over to OpenCore, and aims to dispel a few common myths in the community. Those who just want a macOS machine can skip this page.
+This section contains a brief rundown as to why the community has been transitioning over to OpenCore, and aims to dispel a few common myths in the community. Those who just want a Mac (note: a Hackintosh is a macOS machine) can skip this page.
 
 [[toc]]
 
 ## OpenCore features
 
 * More OS Support!
-  * OpenCore now supports more versions of OS X and macOS natively without painful hacks Clover and Chameleon had to implement
-  * This includes OSes as far back as 10.4, Tiger, and even the latest builds of 12, Monterey!
-* On average, OpenCore systems boot faster than those using Clover as less unnecessary patching is done
-* Better overall stability as patches can be much more precise:
+  * OpenCore now supports more versions of OS X and macOS natively without the painful hacks that Clover and Chameleon implemented
+  * This includes every OS from 10.4, Tiger and newer, including the latest builds of 12, Monterey!
+* OpenCore systems mostly boot faster than systems with Clover bootloaders, which have a lot of redundant patching
+* OpenCore systems also achieve better overall stability because patches are more precisely matched to the hardware:
   * [macOS 10.15.4 update](https://www.reddit.com/r/hackintosh/comments/fo9bfv/macos_10154_update/)
   * AMD OSX patches not needing to update with every minor security update
 * Better overall security in many forms:
@@ -24,38 +24,40 @@ This section contains a brief rundown as to why the community has been transitio
 
 ### Software Support
 
-The biggest reason someone may want to switch from other boot loaders is actually software support:
+Software support is often the key reason that someone switches to Opencore:
 
-* Kexts no longer testing for Clover:
-  * Got a bug with a kext? Many developers including the organization [Acidanthera](https://github.com/acidanthera) (maker of most of your favorite kexts) won't provide support unless on OpenCore
-* Many firmware drivers being merged into OpenCore:
+* New and updated kexts are no longer tested for compatibility with Clover:
+  * Got a bug with a kext? Many developers including [Acidanthera](https://github.com/acidanthera) (maker of most of your favorite kexts) support only OpenCore
+* Many firmware drivers are being merged into OpenCore:
   * [APFS Support](https://github.com/acidanthera/AppleSupportPkg)
   * [FileVault support](https://github.com/acidanthera/AppleSupportPkg)
   * [Firmware patches](https://github.com/acidanthera/AptioFixPkg)
 
 ## OpenCore's shortcomings
 
-The majority of Clover's functionality is actually supported in OpenCore in the form of some quirk, however when transitioning you should pay close attention to OpenCore's missing features as this may or may not affect yourself:
+OpenCore includes most of Clover's functionality as a quirk. However, when transitioning from Clover be well aware that 
 
-* Does not support booting MBR-based operating systems
+Opencore HAS NO SUPPORT for:
+
+* Booting MBR-based operating systems
   * Work around is to chain-load rEFInd once in OpenCore
-* Does not support UEFI-based VBIOS patching
+* UEFI-based VBIOS patching
   * This can be done in macOS however
-* Does not support automatic DeviceProperty injection for legacy GPUs
+* Automatic DeviceProperty injection for legacy GPUs
   * ie. InjectIntel, InjectNvidia and InjectAti
   * This can be done manually however: [GPU patching](https://dortania.github.io/OpenCore-Post-Install/gpu-patching/)
-* Does not support IRQ conflict patching
+* IRQ conflict patching
   * Can be resolved with [SSDTTime](https://github.com/corpnewt/SSDTTime)
-* Does not support P and C state generation for older CPUs
-* Does not support Hardware UUID Injection
-* Does not support auto-detection for many Linux bootloader
+* P and C state generation for older CPUs
+* Hardware UUID Injection
+* Auto-detection for many Linux bootloader
   * Can be resolved by adding an entry in `BlessOverride`
-* Does not support many of Clover's XCPM patches
+* Many of Clover's XCPM patches
   * ie. Ivy Bridge XCPM patches
-* Does not support hiding specific drives
-* Does not support changing settings within OpenCore's menu
-* Does not patch PCIRoot UID value
-* Does not support macOS-only ACPI injection and patching
+* Hiding specific drives
+* Changing settings within OpenCore's menu
+* PCIRoot UID value
+* MacOS-only ACPI injection and patching
 
 ## Common Myths
 
@@ -63,7 +65,7 @@ The majority of Clover's functionality is actually supported in OpenCore in the 
 
 Short Answer: No
 
-Long Answer: No
+Long Answer: Not at all. Opencore has been regularly updated with each update or version of macOS, and is tightly integrated with the latest kexts.
 
 OpenCore's version number does not represent the quality of the project. Instead, it's more of a way to see the stepping stones of the project. Acidanthera still has much they'd like to do with the project including overall refinement and more feature support.
 
@@ -83,24 +85,24 @@ So please do not see the version number as a hindrance, instead as something to 
 
 By default, OpenCore will assume that all OSes should be treated equally in regards to ACPI and SMBIOS information. The reason for this thinking consists of three parts:
 
-* This allows for proper multiboot support, like with [BootCamp](https://dortania.github.io/OpenCore-Post-Install/multiboot/bootcamp.html)
+* This allows for proper multiboot support, as with [BootCamp](https://dortania.github.io/OpenCore-Post-Install/multiboot/bootcamp.html)
 * Avoids poorly made DSDTs and encourages proper ACPI practices
-* Avoids edge cases where info is injected several times, commonly seen with Clover
+* Avoids edge cases where the same info is injected several times, as commonly seen with Clover
   * i.e. How would you handle SMBIOS and ACPI data injection once you booted boot.efi, but then get kicked out? The changes are already in memory and so trying to undo them can be quite dangerous. This is why Clover's method is frowned upon.
 
-However, there are quirks in OpenCore that allow for SMBIOS injection to be macOS-limited by patching where macOS reads SMBIOS info from. The `CustomSMIOSGuid` quirk with `CustomSMBIOSMode` set to `Custom` can break in the future and so we only recommend this option in the event of certain software breaking in other OSes. For best stability, please disable these quirks.
+However, there are quirks in OpenCore that allow for SMBIOS injection to be macOS-limited by patching where macOS reads SMBIOS info from (Needs attention - unclear). The `CustomSMIOSGuid` quirk with `CustomSMBIOSMode` set to `Custom` can break in the future and so we only recommend this option in the event of certain software breaking in another OS. For best stability, please disable these quirks.
 
 ### Does OpenCore require a fresh install?
 
-Not at all in the event you have a "Vanilla" installation – what this refers to is whether the OS has tampered in any way, such as installing 3rd party kexts into the system volume or other unsupported modifications by Apple. When your system has been heavily tampered with, either by you or 3rd party utilities like Hackintool, we recommend a fresh install to avoid any potential issues.
+No. Opencore can boot any "Vanilla" macOS installation that has NOT been tampered with in any way, such as installing 3rd party kexts into the system volume or other unsupported modifications by Apple. When your system has been heavily tampered with, either by you or 3rd party utilities like Hackintool, we recommend a fresh install of macOS to avoid any potential issues.
 
-Special note for Clover users: please reset your NVRAM when installing with OpenCore. Many of Clover variables can conflict with OpenCore and macOS.
+Special note for Clover users: please reset your NVRAM when installing with OpenCore. Many Clover variables conflict with OpenCore and macOS.
 
 * Note: Thinkpad laptops are known to be semi-bricked after an NVRAM reset in OpenCore, we recommend resetting NVRAM by updating the BIOS on these machines.
 
 ### Does OpenCore only support limited versions of macOS?
 
-As of OpenCore 0.6.2, you can now boot every Intel version of macOS going all the way back to OS X 10.4! Proper support however will depend on your hardware, so please verify yourself: [Hardware Limitations](macos-limits.md)
+As of OpenCore 0.6.2, you can now boot every Intel version of macOS going all the way back to OS X 10.4! Proper support however will depend on your hardware, so please verify this for yourself: [Hardware Limitations](macos-limits.md)
 
 ::: details macOS Install Gallery
 
@@ -132,9 +134,9 @@ Acidanthera has tested many versions, and I myself have run many versions of OS 
 
 ### Does OpenCore support older hardware?
 
-As of right now, the majority of Intel hardware is supported so long as the OS itself does! However please refer to the [Hardware Limitations page](macos-limits.md) for more info on what hardware is supported in what versions of OS X/macOS.
+AS of right now, Opencore supports the majority of Intel hardware that can support the particular OS! However please refer to the [Hardware Limitations page](macos-limits.md) for more info on what hardware is supported in what versions of OS X/macOS.
 
-Currently, Intel's Yonah and newer series CPUs have been tested properly with OpenCore.
+Currently, Intel's Yonah and newer series CPUs and chipsets have been tested properly with OpenCore.
 
 ### Does OpenCore support Windows/Linux booting?
 
